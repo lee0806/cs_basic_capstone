@@ -1,28 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <script>
-    // URL에서 key 가져오기
-    const params = new URLSearchParams(window.location.search);
-    const appKey = params.get('key');
-
-    // Tmap API 스크립트 추가
-    const script = document.createElement('script');
-    script.src = `https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=${appKey}`;
-
-    // API가 로드된 후 실행될 코드
-    script.onload = function() {
-      let map = new Tmapv2.Map("map_div", {
-        center: new Tmapv2.LatLng(37.5665, 126.9780),  // 서울시의 위도, 경도
-        width: "100%",
-        height: "100%",
-        zoom: 15
-      });
-    };
-
-    document.head.appendChild(script);
-  </script>
+  <meta charset="UTF-8" />
+  <title>눈길 - Tmap</title>
   <style>
     html, body { margin: 0; padding: 0; height: 100%; }
     #map_div { width: 100%; height: 100%; }
@@ -30,5 +10,33 @@
 </head>
 <body>
   <div id="map_div"></div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const appKey = params.get('key');
+
+    const script = document.createElement('script');
+    script.src = `https://apis.openapi.sk.com/tmap/jsv2?version=1&appKey=${appKey}`;
+
+    // 스크립트가 로드된 후, Tmapv2가 실제 존재할 때까지 기다려서 실행
+    script.onload = () => {
+      console.log("Tmap 스크립트 로드 완료");
+
+      const waitForTmap = setInterval(() => {
+        if (typeof Tmapv2 !== 'undefined' && Tmapv2.Map) {
+          clearInterval(waitForTmap);
+
+          const map = new Tmapv2.Map("map_div", {
+            center: new Tmapv2.LatLng(37.5665, 126.9780),
+            width: "100%",
+            height: "100%",
+            zoom: 15
+          });
+        }
+      }, 100);
+    };
+
+    document.head.appendChild(script);
+  </script>
 </body>
 </html>
